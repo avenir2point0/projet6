@@ -25,7 +25,6 @@ class TricksFixtures extends Fixture
                     Capicola sirloin pork loin, tongue salami occaecat meatball labore voluptate nostrud cow
                     shank spare ribs. Dolore sint ullamco laborum prosciutto mollit in
                     turkey labore meatball ut brisket.');
-
             $manager->persist($trick);
         }
 

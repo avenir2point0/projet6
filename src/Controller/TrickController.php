@@ -17,6 +17,7 @@ use App\Repository\TrickRepository;
 use Doctrine\Common\Persistence\ObjectManager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 class TrickController extends AbstractController
@@ -37,23 +38,31 @@ class TrickController extends AbstractController
     }
 
     /**
-     * @Route("/trick/view/{slug}", name="trick_view")
+     * @Route("/trick/view/{page<\d+>?1}/{slug}", name="trick_view")
      * @param $slug
+     * @param CommentRepository $commentRepository
+     * @param $page
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function trickView($slug, CommentRepository $commentRepository)
+    public function trickView($slug, CommentRepository $commentRepository, $page)
     {
         $trick = $this->getDoctrine()
             ->getRepository(Trick::class)
             ->findTricK($slug);
 
+        $nbPerPage = 10;
+
         $category = $trick->getCategory()->getName();
-        $comments = $commentRepository->findCommentById($trick);
+        $comments = $commentRepository->findCommentById($trick, $page, $nbPerPage);
+        $nbPages = ceil(count($comments) / $nbPerPage);
+
 
         return $this->render('pages/trick_view.html.twig', [
             'trick' => $trick,
             'category' => $category,
-            'comments' => $comments
+            'comments' => $comments,
+            'nbPages'     => $nbPages,
+            'page'        => $page,
         ]);
     }
 
